@@ -11,39 +11,36 @@ public class Hero : MonoBehaviour {
     public float height;
     public bool onGround = false;
 
+    Transform characterTrans;
+
     private void Awake() {
         S = this;
+
+        characterTrans = transform.Find("CharacterTransform");
     }
 
     // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-        
-	}
+    void Start() {
+
+    }
+
+    // Update is called once per frame
+    void Update() {
+        Vector3 pos = characterTrans.position;
+        pos.y = height + 1;
+        characterTrans.position = pos;
+        transform.position = pos;
+    }
 
     private void FixedUpdate() {
-        Move();
+
     }
 
-    void Move() {
-        Vector3 pos = transform.position;
-        if (onGround) {
-            pos.y = height;
-        }
-    }
-
-    void OnCollisionEnter(Collision collision) {
-        print("Collision with mag");
-        if (collision.gameObject.tag == "Ground") {
-            // Если герой взаимодействовал с землёй
-            // Значит персонаж уже на земле
-            onGround = true;
-            DeadEnd.S.HeroCollWithGround();
-            height = collision.gameObject.transform.position.y;
+    private void OnTriggerEnter(Collider other) {
+        print("Trigger hero");
+        if (other.tag == "Ground") {
+            // Это земля
+            height = other.gameObject.transform.position.y;
         }
     }
 }
