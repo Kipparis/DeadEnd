@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO: Сделать интерфейс IKillable который определяет хп и разные резисты.
+// также с этим интерфейсом отображается хп бар над 
+
 public class Hero : MonoBehaviour {
 
     public static Hero S;
@@ -12,17 +15,26 @@ public class Hero : MonoBehaviour {
 
     public Vector3 tPos;
 
+    public int maxHealth;
+    public GameObject healthBarPrefab;
+
     public bool ________________;
 
     public float height;
     public bool onGround = false;
 
-    public Sword[] swords;
+    public Sword sword;   // Максимальное кол-во экипируемых мечей
+    public HealthBar healthBar;
 
     private void Awake() {
-        S = this; 
-        
-        
+        S = this;
+
+        // TODO: Заменить на нормальный поиск и экипировку оружия
+        sword = new Sword();
+        Sword tSword = GameObject.Find("Sword").GetComponent<Sword>();
+        if (tSword != null) {
+            sword = tSword;
+        }
     }
 
     // Use this for initialization
@@ -32,18 +44,46 @@ public class Hero : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        Attack();
+        // Движение сначала, т.к. стоим на месте в редких случаях
+        Move(); // Двигаемся
 
-        Move();
+        // Если блок активен, не можем ударить
+        Block();    // Блокируем удар
+        Attack();   // Атакуем
+
+        // Проверяем инициализацию healthBar'a
+        if (Input.GetKeyUp(KeyCode.H)) {
+            print("Creating HealsBar");
+            ShowHealthBar();
+        }
     }
 
-    void Attack() {
-        if (Input.GetMouseButtonUp(0)) {
-            print("Hero attack");
-            // Игрок нажал левую кнопку мыши
-            // Значит мы бьём мечом ( который мы можем лутать или сменять
-            
+    // Функция создаёт объект HealthBar, и даёт ему понять что делать
+    void ShowHealthBar() {
+        GameObject go = Instantiate(healthBarPrefab) as GameObject;
+        go.transform.parent = transform;
+        healthBar = go.GetComponent<HealthBar>();
+    }
+
+    void Block() {
+        if (Input.GetKeyDown(KeyCode.J)) { // ПКМ
+            print("Hero block with " + sword.name);
+            // Блокируем
+            sword.state = WeaponState.block;
         }
+        if (Input.GetKeyUp(KeyCode.J)) {
+            // Перестаём блокировать
+            sword.state = WeaponState.idle;
+        }
+    }
+
+    void Attack() {    
+        if (Input.GetKeyDown(KeyCode.K)) { // ЛКМ
+            // Значит мы бьём мечом ( который мы можем лутать или сменять
+            print("Hero attack with " + sword.name);
+            sword.state = WeaponState.attack;
+        }
+        
     }
 
     void Move() {
@@ -59,16 +99,17 @@ public class Hero : MonoBehaviour {
 
         transform.position = tPos;
 
-        Vector3 NextDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, 
-            Input.GetAxisRaw("Vertical"));
-        //if (NextDir != Vector3.zero)
-        //    transform.rotation = Quaternion.Lerp(Quaternion.LookRotation(NextDir),
-        //        transform.rotation, rotEasing);
-        //transform.rotation = Quaternion.LookRotation(fPos, Vector3.up * 3);
         if (direction.magnitude != 0) {
             transform.rotation = Quaternion.Slerp(transform.rotation,
                 Quaternion.LookRotation(direction), 0.1f);
         }
+
+        // Хпшечки всегда смотрят в камеру
+        //healthBar.transform.LookAt(Camera.main.transform);
+        
+
+        //healthBar.transform.rotation = rot;
+
     }
 
     private void FixedUpdate() {
@@ -80,5 +121,9 @@ public class Hero : MonoBehaviour {
             onGround = true;
             height = collision.gameObject.transform.position.y;
         }
+    }
+
+    public void DamageSomething() {
+        print("Sword triggered with something");
     }
 }
