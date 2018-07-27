@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,6 +36,8 @@ public class Hero : MonoBehaviour {
         if (tSword != null) {
             sword = tSword;
         }
+
+        InitHealthBar();
     }
 
     // Use this for initialization
@@ -52,17 +55,27 @@ public class Hero : MonoBehaviour {
         Attack();   // Атакуем
 
         // Проверяем инициализацию healthBar'a
-        if (Input.GetKeyUp(KeyCode.H)) {
-            print("Creating HealsBar");
-            ShowHealthBar();
+        if (Input.GetKeyUp(KeyCode.H)) { 
+            if (healthBar.visible) {
+                UnshowРealthBar();  // Если хп уже было видно, скрываем
+            } else {
+                print("Showing HealsBar");
+                ShowHealthBar();    // Если их не видно, показываем
+            }
         }
     }
 
-    // Функция создаёт объект HealthBar, и даёт ему понять что делать
     void ShowHealthBar() {
+        StartCoroutine(healthBar.Show());
+    }
+
+    // Функция создаёт объект HealthBar, и даёт ему понять что делать
+    void InitHealthBar() {
         GameObject go = Instantiate(healthBarPrefab) as GameObject;
         go.transform.parent = transform;
         healthBar = go.GetComponent<HealthBar>();
+        healthBar.owner = this.gameObject;
+        healthBar.gameObject.SetActive(false);
     }
 
     void Block() {

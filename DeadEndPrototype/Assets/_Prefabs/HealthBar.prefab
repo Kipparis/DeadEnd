@@ -169,4 +169,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
+  bezierPts: []
+  bezierRots: []
+  startTime: -1
+  moveDur: 0.75
+  visible: 0
   maxHealth: 0
