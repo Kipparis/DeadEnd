@@ -16,8 +16,10 @@ public class Hero : MonoBehaviour {
 
     public Vector3 tPos;
 
-    public int maxHealth;
+    public float maxHealth;
     public GameObject healthBarPrefab;
+
+    public GameObject floatingScorePrefab;
 
     public bool ________________;
 
@@ -26,6 +28,8 @@ public class Hero : MonoBehaviour {
 
     public Sword sword;   // Максимальное кол-во экипируемых мечей
     public HealthBar healthBar;
+
+    Transform UI;   // Холст для отображения UI
 
     private void Awake() {
         S = this;
@@ -37,7 +41,9 @@ public class Hero : MonoBehaviour {
             sword = tSword;
         }
 
-        InitHealthBar();
+        UI = GameObject.Find("UI").GetComponent<Transform>();
+
+        InitHealth();
     }
 
     // Use this for initialization
@@ -57,12 +63,22 @@ public class Hero : MonoBehaviour {
         // Проверяем инициализацию healthBar'a
         if (Input.GetKeyUp(KeyCode.H)) { 
             if (healthBar.visible) {
-                UnshowРealthBar();  // Если хп уже было видно, скрываем
+                UnshowHealthBar();  // Если хп уже было видно, скрываем
             } else {
                 print("Showing HealsBar");
                 ShowHealthBar();    // Если их не видно, показываем
             }
         }
+
+        // Проверяем создание FloatingScore
+        if (Input.GetKeyUp(KeyCode.F)) {
+            // Создаём 
+            Scoreboard.S.Init(transform.position);
+        }
+    }
+
+    void UnshowHealthBar() {
+        StartCoroutine(healthBar.Unshow());
     }
 
     void ShowHealthBar() {
@@ -70,11 +86,16 @@ public class Hero : MonoBehaviour {
     }
 
     // Функция создаёт объект HealthBar, и даёт ему понять что делать
-    void InitHealthBar() {
+    void InitHealth() {
         GameObject go = Instantiate(healthBarPrefab) as GameObject;
         go.transform.parent = transform;
         healthBar = go.GetComponent<HealthBar>();
         healthBar.owner = this.gameObject;
+
+        // При создании всё на максимальках
+        healthBar.maxHealth = maxHealth;
+        healthBar.health = maxHealth;
+
         healthBar.gameObject.SetActive(false);
     }
 
@@ -93,7 +114,6 @@ public class Hero : MonoBehaviour {
     void Attack() {    
         if (Input.GetKeyDown(KeyCode.K)) { // ЛКМ
             // Значит мы бьём мечом ( который мы можем лутать или сменять
-            print("Hero attack with " + sword.name);
             sword.state = WeaponState.attack;
         }
         
@@ -138,5 +158,10 @@ public class Hero : MonoBehaviour {
 
     public void DamageSomething() {
         print("Sword triggered with something");
+    }
+
+    float health {
+        get { return (healthBar.health); }
+        set { healthBar.health = value; }
     }
 }

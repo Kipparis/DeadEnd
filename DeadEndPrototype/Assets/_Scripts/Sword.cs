@@ -13,33 +13,35 @@ public enum WeaponState {
 
 [System.Serializable]
 public class DamageDef {
-    public int damage;
+    public float damage;
     public string type;
+
+    public float attackStartTime;   // Время которое проходит "для замаха"
+    public float attackDuration;    // Как долго проходит атака
 }
 
 public class Sword : MonoBehaviour {
     public Hero owner;
 
+    // TODO: Сделать скалируемую настройку позиции для оружия
+    // т.е. в зависимости от размеров модельки мы изменяем чёто там
+
     // Определяет позицию оружия
+    [SerializeField]
     private WeaponState _state = WeaponState.idle;
     public WeaponState state {
         get { return (_state); }
         set {
-            switch (value) {
-                case WeaponState.waiting:
+            switch (value) {    // Переносим всё в функции, т.к. некоторые оружия
+                case WeaponState.waiting:   // могут не иметь возможности атаковать или блокировать
                     break;
                 case WeaponState.idle:
-                    transform.localPosition = new Vector3(0.87f, 0.3f, 0);
-                    transform.localRotation = Quaternion.Euler(0, 90, -48);
+                    Idle();
                     break;
                 case WeaponState.attack:
-                    transform.localPosition = new Vector3(0, 0.25f, 1);
-                    transform.localRotation = Quaternion.Euler(0, -90, 0);
                     StartCoroutine(Attack());
                     break;
                 case WeaponState.block:
-                    transform.localPosition = new Vector3(-0.6f, 0.25f, 0.8f);
-                    transform.localRotation = Quaternion.Euler(90, 0, 0);
                     Block();
                     break;
                 default:
@@ -49,7 +51,7 @@ public class Sword : MonoBehaviour {
     }
 
     public DamageDef dd = new DamageDef() {
-        damage = 1,
+        damage = 100,
         type = "Fire"
     };
 
@@ -58,6 +60,8 @@ public class Sword : MonoBehaviour {
     // У каждого эффекта будет пометка - влияет на персонажа или на врага 
     // или на кого вообще
     public List<string> specials;   // Пока что строки
+
+    public GameObject lastGO;
 
     private void Awake() {
         GameObject go = Utils.FindTaggedParent(this.gameObject);
@@ -76,11 +80,26 @@ public class Sword : MonoBehaviour {
     // вызывание различных эффектов )
 
     void Block() {
-
+        _state = WeaponState.block;
+        transform.localPosition = new Vector3(-0.6f, 0.25f, 0.8f);
+        transform.localRotation = Quaternion.Euler(90, 0, 0);
     }
 
     IEnumerator Attack() {
-        yield return new WaitForSeconds(0.4f);
+        // Зарержка перед атакой (типо замах)
+        yield return new WaitForSeconds(dd.attackStartTime);
+        _state = WeaponState.attack;
+        transform.localPosition = new Vector3(0, 0.25f, 1);
+        transform.localRotation = Quaternion.Euler(0, -90, 0);
+        
+        // Возвращаем через некоторое время в обратное положение
+        yield return new WaitForSeconds(dd.attackDuration);
         state = WeaponState.idle;
+    }
+
+    void Idle() {
+        _state = WeaponState.idle;
+        transform.localPosition = new Vector3(0.87f, 0.3f, 0);
+        transform.localRotation = Quaternion.Euler(0, 90, -48);
     }
 }

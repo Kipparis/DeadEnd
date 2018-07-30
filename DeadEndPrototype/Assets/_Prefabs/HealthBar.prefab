@@ -54,7 +54,7 @@ Transform:
   m_GameObject: {fileID: 1581569133454296}
   m_LocalRotation: {x: 0.010271105, y: 0.00008066874, z: 0.007853292, w: -0.9999165}
   m_LocalPosition: {x: 0, y: 1.37, z: -0.037}
-  m_LocalScale: {x: 1.5802344, y: 0.30801076, z: 1}
+  m_LocalScale: {x: 1.5802344, y: 0.20751782, z: 1}
   m_Children:
   - {fileID: 4846111177156686}
   m_Father: {fileID: 0}
@@ -172,6 +172,5 @@ MonoBehaviour:
   bezierPts: []
   bezierRots: []
   startTime: -1
-  moveDur: 0.75
-  visible: 0
+  moveDur: 0.2
   maxHealth: 0

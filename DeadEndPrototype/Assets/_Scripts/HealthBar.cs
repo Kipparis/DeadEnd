@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO: Сделать эту фигнюшку классом UI ( или просто приравнять ему такой слой )
+
 public class HealthBar : MonoBehaviour {
     // Чтобы не приравнивать каждый раз это поле, нужно автоматически 
     // вызывать это поле и сделать так чтоб оно само определяло его позицию
@@ -18,8 +20,19 @@ public class HealthBar : MonoBehaviour {
     public float startTime = -1f;
     public float moveDur = 1.5f;
 
-    public bool visible = false;    // Становится видимой только если стоит на
+    public Vector3 endPosition;
+
+    private bool _visible = false;    // Становится видимой только если стоит на
     // своём месте
+    public bool visible {
+        get { return (_visible); }
+        set {
+            _visible = value;
+            gameObject.SetActive(_visible);
+        }
+    }
+
+    public bool inProcess = false;
 
     private void Awake() {
         healthStrip = GameObject.Find("Health");
@@ -28,9 +41,15 @@ public class HealthBar : MonoBehaviour {
         bezierRots = new List<Quaternion>();
     }
 
-    public int maxHealth;
+    private void Start() {
+        // Найти наивысшую точку у коллайдера и сделать её точкой для перемещения
+        // полоски хп, находим родителя с помощью FindTaggetParent();
+        owner = Utils.FindTaggedParent(gameObject);
+    }
 
-    public int health {
+    public float maxHealth;
+
+    public float health {
         get { return (_health); }
         set {
             _health = value;
@@ -39,10 +58,11 @@ public class HealthBar : MonoBehaviour {
                 return;
             }
             healthStrip.transform.localScale = new Vector3(
-                _health / maxHealth, 1, 1);
+                _health / maxHealth, 1f, 1);
         }
     }
-    private int _health;
+    [SerializeField]
+    private float _health;
 
     private void Update() {
         // TODO: Сделать смягчение
@@ -78,8 +98,9 @@ public class HealthBar : MonoBehaviour {
 
     // т.к. мы знаем время переходов, создаём эвэйт фор секондс,
     // чтобы заново задать время старта только уже для поворота
-
     public IEnumerator Show() {
+        // Даём знать что переход идёт
+        inProcess = true;
         // Делаем видимым
         this.gameObject.SetActive(true);
         // Задаём начальную позицию и поворот
@@ -89,7 +110,9 @@ public class HealthBar : MonoBehaviour {
 
         // Сначала переходим в позицию повыше
         bezierPts.Add(transform.localPosition);  // Первая точка
-        bezierPts.Add(transform.localPosition + Vector3.up * 1.3f);
+        //bezierPts.Add(transform.localPosition + Vector3.up * 1.3f);   // ВРЕМЕННО
+        bezierPts.Add(owner.GetComponent<CapsuleCollider>().height * (3 *Vector3.up / 4)
+            + transform.localPosition);
 
         startTime = Time.time;
 
@@ -106,5 +129,11 @@ public class HealthBar : MonoBehaviour {
         yield return new WaitForSeconds(moveDur + 0.1f);    // +0.1f прочто чтобы убедиться
 
         visible = true;
+        inProcess = false;
+    }
+
+    public IEnumerator Unshow() {
+        visible = false;
+        yield return null;
     }
 }

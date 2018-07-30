@@ -7,6 +7,7 @@ TagManager:
   - Ground
   - Sword
   - Hero
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -17,8 +18,8 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - 
-  - 
+  - Enemy
+  - Hero
   - 
   - 
   - 
