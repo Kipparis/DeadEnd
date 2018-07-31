@@ -4,9 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-// TODO: Сделать нормальный конструктор в Scoreboard, чтобы задавало все значения ( хотя хз )
+// Чтобы они все двигались вместе с камерой, можно создавать в нужном ио список всех пи, которые относятся к нему.
+// Потом обновлять их положение по сравнению с тем что было
 public class FloatingScore : MonoBehaviour {
-    static public float MOVEDUR = 2f;   // Время передвижения по дуге
+    // Ускорить
+    static public float MOVEDUR = 1f;   // Время передвижения по дуге
 
     public List<Vector3> bezierPts;
     Transform UI;
@@ -14,14 +16,14 @@ public class FloatingScore : MonoBehaviour {
     public float startTime = -1;   // Пока значение такое, движение не начинается
 
     // Свойства для быстрого доступа
-    string _text;
-    string text {
+    private string _text;
+    public  string text {
         get { return (gameObject.GetComponent<Text>().text); }
         set { gameObject.GetComponent<Text>().text = value; }
     }
 
-    float _value;
-    float value {
+    private float _value;
+    public  float value {
         get { return (float.Parse(text)); }
         set { text = value.ToString(); }
     }
@@ -33,7 +35,12 @@ public class FloatingScore : MonoBehaviour {
         float u = (Time.time - startTime) / FloatingScore.MOVEDUR;
         u = Mathf.Clamp01(u); // Ограничиваем нулём и единицей
 
+        // Работаем с позицией
         transform.position = Utils.Bezier(u, bezierPts);
+
+        // Работаем с прозрачностю
+        Color newColor = new Color(1, 1, 1, Utils.Bezier(u, new List<float> { 0,5,0}));
+        gameObject.GetComponent<Text>().color = newColor;
 
         if (u == 1) {
             // Переход оконченн

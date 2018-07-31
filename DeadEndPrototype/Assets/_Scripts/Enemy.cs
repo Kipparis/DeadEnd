@@ -11,7 +11,12 @@ public class Enemy : MonoBehaviour, IKillable {
     public float maxHealth;
     public float health {
         get { return (healthBar.health); }
-        set { healthBar.health = value; }
+        set {
+            healthBar.health = value;
+            if (healthBar.health <= 0) {
+                Die();
+            }
+        }
     }
 
     public int secondsToShowHealthBar;
@@ -54,26 +59,21 @@ public class Enemy : MonoBehaviour, IKillable {
         InitHealth();   // Создаём полоску и делаем её неактивной
     }
 
-    // Когда получаем урон, показываем полоску хп на 2 секунды
-    private void OnCollisionEnter(Collision collision) {
-        if (Utils.FindTaggedParent(collision.gameObject).tag == "Hero") {
-            if (healthBar.inProcess) return;    // Если полоска хп уже пытается отобразиться, 
-            ShowHealth();   // ничего не делаем
-        }
-    }
-
     private void OnTriggerEnter(Collider other) {
         if (Utils.FindTaggedParent(other.gameObject).tag == "Sword") {
             if (healthBar.inProcess) return;    // Если полоска хп уже пытается отобразиться, 
+
+            ShowHealth();   // Обновляем таймер или запускаем новый
+
+            Scoreboard.S.Init(transform.position, other.GetComponent<Sword>().dd.damage);
             health -= other.GetComponent<Sword>().dd.damage;
-            if (health <= 0) { // Кто то умер, мы убиваем и спауним нового
-                Die();
-            }
-            ShowHealth();   // ничего не делаем
         }
     }
 
     void Die() {
+        // Делаем нового
+        DeadEnd.S.Die(this);
+        // Удаляем этого
         Destroy(gameObject);
         // TODO: Сделать так чтоб хуйнюшка распадалась на составные части и затем исчезала
     }

@@ -18,7 +18,7 @@ public class Scoreboard : MonoBehaviour {
     }
 
     // Пока что инит с одной точкой, потом можно исп. params
-    public void Init(Vector3 startPos) {
+    public void Init(Vector3 startPos, string str) {
         Vector3 pos = Vector3.zero;
 
         // Создаём флоэтин скор
@@ -26,6 +26,7 @@ public class Scoreboard : MonoBehaviour {
         go.transform.SetParent(UI);
 
         FloatingScore fs = go.GetComponent<FloatingScore>();
+        fs.text = str;
 
         // Парсим туда бизеровы точки
         // Пока только одну
@@ -41,5 +42,9 @@ public class Scoreboard : MonoBehaviour {
         // Третью точку выбираем немного правее от начальной позиции
         fs.bezierPts.Add(Camera.main.WorldToScreenPoint(startPos + Vector3.right * 2));
         fs.startTime = Time.time;
+    }
+
+    public void Init(Vector3 startPos, float value) {
+        Init(startPos, value.ToString());
     }
 }

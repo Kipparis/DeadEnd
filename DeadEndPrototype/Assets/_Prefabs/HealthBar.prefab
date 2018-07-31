@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33473240915059426}
   - component: {fileID: 23699314997678624}
   - component: {fileID: 114070490357921280}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 4846111177156686}
   - component: {fileID: 33833727884188110}
   - component: {fileID: 23100751747954856}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Health
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -53,7 +53,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1581569133454296}
   m_LocalRotation: {x: 0.010271105, y: 0.00008066874, z: 0.007853292, w: -0.9999165}
-  m_LocalPosition: {x: 0, y: 1.37, z: -0.037}
+  m_LocalPosition: {x: 10.916655, y: -2.6391108e-17, z: 9.194526}
   m_LocalScale: {x: 1.5802344, y: 0.20751782, z: 1}
   m_Children:
   - {fileID: 4846111177156686}
@@ -68,7 +68,7 @@ Transform:
   m_GameObject: {fileID: 1902824591396830}
   m_LocalRotation: {x: 1, y: 0, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: -0, z: 0.01}
-  m_LocalScale: {x: 0.80678284, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4661256641223002}
   m_RootOrder: 0
@@ -169,8 +169,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
+  healthStrip: {fileID: 0}
   bezierPts: []
   bezierRots: []
   startTime: -1
   moveDur: 0.2
+  endPosition: {x: 0, y: 0, z: 0}
+  inProcess: 0
   maxHealth: 0
+  _health: 0

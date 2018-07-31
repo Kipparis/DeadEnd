@@ -10,7 +10,7 @@ public class HealthBar : MonoBehaviour {
     public GameObject owner;    // Использовать полоску жизни могут только поцы
     // которые наследуют интерфейс IKillable, так что потом заменим тип на интерфейс, и от него
     // будет выбирать хпшку
-    GameObject healthStrip;
+    public GameObject healthStrip;
 
     public List<Vector3> bezierPts; // Точки для перехода в позицию повыше
     public List<Quaternion> bezierRots; // Точки для перехода в поворот
@@ -35,8 +35,7 @@ public class HealthBar : MonoBehaviour {
     public bool inProcess = false;
 
     private void Awake() {
-        healthStrip = GameObject.Find("Health");
-
+        // Для передвижения
         bezierPts = new List<Vector3>();
         bezierRots = new List<Quaternion>();
     }
@@ -45,6 +44,8 @@ public class HealthBar : MonoBehaviour {
         // Найти наивысшую точку у коллайдера и сделать её точкой для перемещения
         // полоски хп, находим родителя с помощью FindTaggetParent();
         owner = Utils.FindTaggedParent(gameObject);
+
+        healthStrip = GameObject.Find("Health");
     }
 
     public float maxHealth;
@@ -57,6 +58,7 @@ public class HealthBar : MonoBehaviour {
 
                 return;
             }
+            if (healthStrip == null) return;
             healthStrip.transform.localScale = new Vector3(
                 _health / maxHealth, 1f, 1);
         }
@@ -99,6 +101,7 @@ public class HealthBar : MonoBehaviour {
     // т.к. мы знаем время переходов, создаём эвэйт фор секондс,
     // чтобы заново задать время старта только уже для поворота
     public IEnumerator Show() {
+        // TODO: Сделать так, что если он уже отображается, ничего не делаем
         // Даём знать что переход идёт
         inProcess = true;
         // Делаем видимым

@@ -6,6 +6,9 @@ using UnityEngine;
 // TODO: Сделать интерфейс IKillable который определяет хп и разные резисты.
 // также с этим интерфейсом отображается хп бар над 
 
+// TODO: Сделать класс alive, в нём будет функция он хит энтер которая спаунит показ урона, и показ хпшки, так же основывая на
+// резистах убирает из текущего хп.
+
 public class Hero : MonoBehaviour {
 
     public static Hero S;
@@ -29,6 +32,8 @@ public class Hero : MonoBehaviour {
     public Sword sword;   // Максимальное кол-во экипируемых мечей
     public HealthBar healthBar;
 
+    GameObject poi; // У игрока есть точка к которой он может привязать свой взгляд, крч как в экшнах на консолях
+
     Transform UI;   // Холст для отображения UI
 
     private void Awake() {
@@ -44,11 +49,6 @@ public class Hero : MonoBehaviour {
         UI = GameObject.Find("UI").GetComponent<Transform>();
 
         InitHealth();
-    }
-
-    // Use this for initialization
-    void Start() {
-
     }
 
     // Update is called once per frame
@@ -70,11 +70,25 @@ public class Hero : MonoBehaviour {
             }
         }
 
-        // Проверяем создание FloatingScore
-        if (Input.GetKeyUp(KeyCode.F)) {
-            // Создаём 
-            Scoreboard.S.Init(transform.position);
+        // Проверяем функционирование пои
+        if (Input.GetKeyUp(KeyCode.L)) {
+            SwitchBetweenEnemies();  
+        } 
+    }
+
+    void SwitchBetweenEnemies() {
+        // Если пои всё ещё равун нулю, выбираем первого врага
+        if (poi == null) {
+            poi = DeadEnd.S.enemies[0].gameObject;
+            return;
         }
+        int ndx = DeadEnd.S.enemies.IndexOf(poi.GetComponent<Enemy>());
+        if (ndx == DeadEnd.S.enemies.Count - 1) {
+            poi = null; // Если это последний моб в списке, просто снимаем список
+            return;
+        }
+        ndx++;
+        poi = DeadEnd.S.enemies[ndx].gameObject;
     }
 
     void UnshowHealthBar() {
@@ -130,23 +144,16 @@ public class Hero : MonoBehaviour {
 
         Vector3 direction = tPos - transform.position;
 
-        transform.position = tPos;
+        if (poi != null) {
+            // Если есть точка интереса, вращение делаем именно к этой точке
+            direction = poi.transform.position - transform.position;
+        }
 
         if (direction.magnitude != 0) {
             transform.rotation = Quaternion.Slerp(transform.rotation,
                 Quaternion.LookRotation(direction), 0.1f);
         }
-
-        // Хпшечки всегда смотрят в камеру
-        //healthBar.transform.LookAt(Camera.main.transform);
-        
-
-        //healthBar.transform.rotation = rot;
-
-    }
-
-    private void FixedUpdate() {
-
+        transform.position = tPos;
     }
 
     private void OnCollisionEnter(Collision collision) {
