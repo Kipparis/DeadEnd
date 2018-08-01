@@ -7,6 +7,10 @@ using UnityEngine;
 
 // TODO: Создать список в DeadEnd, и по нему уже скролить
 
+// TODO: Поменять именна сворд на веапон, либо перенести всё в супер класс веапон
+
+// TODO: Сделать ПИ скалируемым, сделать считывание и парс диалогов из файла .di
+
 public class DeadEnd : MonoBehaviour {
 
     public static DeadEnd S;
@@ -31,7 +35,7 @@ public class DeadEnd : MonoBehaviour {
     public void SpawnEnemy() {
         GameObject go = Instantiate(enemyPrefab) as GameObject;
         // Задаём позицию
-        go.transform.position = new Vector3(10, 1, 0);
+        go.transform.position = new Vector3(10, 2, 0);
 
         Enemy enemy = go.GetComponent<Enemy>();
         if (enemies == null) enemies = new List<Enemy>();

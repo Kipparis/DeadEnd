@@ -34,7 +34,7 @@ public class Hero : MonoBehaviour {
 
     GameObject poi; // У игрока есть точка к которой он может привязать свой взгляд, крч как в экшнах на консолях
 
-    Transform UI;   // Холст для отображения UI
+    public bool isTalking = false;
 
     private void Awake() {
         S = this;
@@ -45,8 +45,6 @@ public class Hero : MonoBehaviour {
         if (tSword != null) {
             sword = tSword;
         }
-
-        UI = GameObject.Find("UI").GetComponent<Transform>();
 
         InitHealth();
     }
@@ -61,7 +59,7 @@ public class Hero : MonoBehaviour {
         Attack();   // Атакуем
 
         // Проверяем инициализацию healthBar'a
-        if (Input.GetKeyUp(KeyCode.H)) { 
+        if (Input.GetKeyUp(KeyCode.H)) {
             if (healthBar.visible) {
                 UnshowHealthBar();  // Если хп уже было видно, скрываем
             } else {
@@ -70,10 +68,25 @@ public class Hero : MonoBehaviour {
             }
         }
 
+        // TODO: Сделать отображение кто
         // Проверяем функционирование пои
         if (Input.GetKeyUp(KeyCode.L)) {
-            SwitchBetweenEnemies();  
-        } 
+            SwitchBetweenEnemies();
+        }
+
+        // TODO: При старте диалога камера перемещается между игроком и объектом
+        // Перенести подсчёт на что нибудь, кроме пои, т.к. это всё таки для врагов фигнюшка
+        if (Input.GetKeyUp(KeyCode.Space)) {
+            if (poi != null && poi.GetComponent<Enemy>() != null && poi.GetComponent<Enemy>().readyForDialogue) {
+                // Если наша цель - враг, с которым есть доступная дистанция, можно разговаривать
+                if (isTalking) {
+                    FindObjectOfType<DialogueManager>().DisplayNextSentence();
+                    return;
+                } 
+                poi.GetComponent<DialogueTrigger>().TriggerDialogue();
+                isTalking = true;
+            } 
+        }
     }
 
     void SwitchBetweenEnemies() {
@@ -138,12 +151,14 @@ public class Hero : MonoBehaviour {
         float v = Input.GetAxis("Vertical");
 
         tPos = transform.position;
-        if (height != 0) tPos.y = height + Hero.HERO_HEIGHT / 2f;
+        //if (height != 0) tPos.y = height + Hero.HERO_HEIGHT / 2f;
         tPos.x += h * speed * Time.deltaTime;
         tPos.z += v * speed * Time.deltaTime;
 
         Vector3 direction = tPos - transform.position;
 
+        // TODO: Сделать какое то обозначение врага которого мы выбрали
+        // TODO: Сделать выбор врагов только которые находятся в поле вида камеры
         if (poi != null) {
             // Если есть точка интереса, вращение делаем именно к этой точке
             direction = poi.transform.position - transform.position;

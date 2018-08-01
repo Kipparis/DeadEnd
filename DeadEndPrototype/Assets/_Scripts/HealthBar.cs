@@ -4,6 +4,8 @@ using UnityEngine;
 
 // TODO: Сделать эту фигнюшку классом UI ( или просто приравнять ему такой слой )
 
+// TODO: Сделать так, чтоб он постоянно смотрел в камеру
+
 public class HealthBar : MonoBehaviour {
     // Чтобы не приравнивать каждый раз это поле, нужно автоматически 
     // вызывать это поле и сделать так чтоб оно само определяло его позицию
@@ -14,9 +16,7 @@ public class HealthBar : MonoBehaviour {
 
     public List<Vector3> bezierPts; // Точки для перехода в позицию повыше
     public List<Quaternion> bezierRots; // Точки для перехода в поворот
-
-    bool isMoving, isRotating = false;  // От них зависит 
-
+    
     public float startTime = -1f;
     public float moveDur = 1.5f;
 

@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour, IKillable {
+    public float distanceForDialogue = 3f;
+
+    public bool _________________________;
+
     public GameObject healthBarPrefab;
     public HealthBar healthBar { get; set; }
+
+    public bool readyForDialogue = false;
 
     public Dictionary<string, float> resist { get; set; }
 
@@ -20,6 +26,27 @@ public class Enemy : MonoBehaviour, IKillable {
     }
 
     public int secondsToShowHealthBar;
+
+    private void Update() {
+        // Проверяем расстояние до героя
+        Vector3 direction = Hero.S.transform.position - transform.position;
+        float distance = direction.magnitude;
+
+        // Если расстояние ближе какого то значения,
+        readyForDialogue = (distance < distanceForDialogue);
+        // Герой может нажать на кнопку и начать разговор
+
+        // Если герой ближе этого расстояния, враг смотрит на него ( ну или как нибудь реагирует )
+        if (readyForDialogue) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction.normalized), 0.2f);
+
+        // TODO: пока что один враг, но нужно создавать список врагов и смотреть кто из них ближе
+    }
+
+    // Вводим переменные только для того, чтобы манекен можно было убить,
+    // потом переводим все переменные в общий интерфейс
+    private void Awake() {
+        InitHealth();   // Создаём полоску и делаем её неактивной
+    }
 
     public void InitHealth() {
         GameObject go = Instantiate(healthBarPrefab) as GameObject;
@@ -53,20 +80,18 @@ public class Enemy : MonoBehaviour, IKillable {
         StartCoroutine(healthBar.Unshow());
     }
 
-    // Вводим переменные только для того, чтобы манекен можно было убить,
-    // потом переводим все переменные в общий интерфейс
-    private void Awake() {
-        InitHealth();   // Создаём полоску и делаем её неактивной
-    }
-
+    // Добавить подсчёт в зависимости от резиста
     private void OnTriggerEnter(Collider other) {
         if (Utils.FindTaggedParent(other.gameObject).tag == "Sword") {
-            if (healthBar.inProcess) return;    // Если полоска хп уже пытается отобразиться, 
+            if (!healthBar.inProcess) ShowHealth();   // Если полоска хп уже пытается отобразиться, 
 
-            ShowHealth();   // Обновляем таймер или запускаем новый
+            Sword otherSword = other.GetComponent<Sword>();
 
-            Scoreboard.S.Init(transform.position, other.GetComponent<Sword>().dd.damage);
-            health -= other.GetComponent<Sword>().dd.damage;
+            float damage = otherSword.dd.damage;
+            if (otherSword.state != WeaponState.attack) damage = damage / 4f;    // Если мы задели врага в состоянии блока, то урон поменьше
+            health -= damage;
+
+            Scoreboard.S.Init(transform.position, damage);
         }
     }
 

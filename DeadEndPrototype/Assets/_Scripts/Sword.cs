@@ -55,8 +55,6 @@ public class Sword : MonoBehaviour {
         type = "Fire"
     };
 
-    public string name;
-
     // У каждого эффекта будет пометка - влияет на персонажа или на врага 
     // или на кого вообще
     public List<string> specials;   // Пока что строки
@@ -81,7 +79,7 @@ public class Sword : MonoBehaviour {
 
     void Block() {
         _state = WeaponState.block;
-        transform.localPosition = new Vector3(-0.6f, 0.25f, 0.8f);
+        transform.localPosition = new Vector3(-0.6f, 0.25f, 0.6f);
         transform.localRotation = Quaternion.Euler(90, 0, 0);
     }
 
@@ -99,7 +97,8 @@ public class Sword : MonoBehaviour {
 
     void Idle() {
         _state = WeaponState.idle;
-        transform.localPosition = new Vector3(0.87f, 0.3f, 0);
+        //transform.localPosition = new Vector3(0.87f, 0.3f, 0);
+        transform.localPosition = new Vector3(0.7f, 0.2f, 0);
         transform.localRotation = Quaternion.Euler(0, 90, -48);
     }
 }
