@@ -32,7 +32,7 @@ public class Hero : MonoBehaviour {
     public Sword sword;   // Максимальное кол-во экипируемых мечей
     public HealthBar healthBar;
 
-    GameObject poi; // У игрока есть точка к которой он может привязать свой взгляд, крч как в экшнах на консолях
+    public GameObject poi; // У игрока есть точка к которой он может привязать свой взгляд, крч как в экшнах на консолях
 
     public bool isTalking = false;
 
@@ -87,21 +87,32 @@ public class Hero : MonoBehaviour {
                 isTalking = true;
             } 
         }
+
+        // Если нажимаем на P рядом с предметом, то он лутается
+        if (Input.GetKeyUp(KeyCode.P)) {
+            
+        }
     }
+
 
     void SwitchBetweenEnemies() {
         // Если пои всё ещё равун нулю, выбираем первого врага
         if (poi == null) {
             poi = DeadEnd.S.enemies[0].gameObject;
+            SelectEnemy.S.poi = poi;
             return;
         }
         int ndx = DeadEnd.S.enemies.IndexOf(poi.GetComponent<Enemy>());
         if (ndx == DeadEnd.S.enemies.Count - 1) {
             poi = null; // Если это последний моб в списке, просто снимаем список
+            SelectEnemy.S.poi = poi;
             return;
         }
         ndx++;
         poi = DeadEnd.S.enemies[ndx].gameObject;
+
+        // TODO: Сделать выделение ио
+        SelectEnemy.S.poi = poi;
     }
 
     void UnshowHealthBar() {

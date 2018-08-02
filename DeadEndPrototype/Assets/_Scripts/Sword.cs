@@ -23,6 +23,9 @@ public class DamageDef {
 public class Sword : MonoBehaviour {
     public Hero owner;
 
+    public bool pickable = false;   // Если расстояние становится нормальным, приравнивается к тру,
+    // меняется тэг чтобы можно было легко найти
+
     // TODO: Сделать скалируемую настройку позиции для оружия
     // т.е. в зависимости от размеров модельки мы изменяем чёто там
 
@@ -66,6 +69,10 @@ public class Sword : MonoBehaviour {
         if (go != null && go.tag == "Hero") {
             owner = go.GetComponent<Hero>();
         }
+    }
+
+    private void Update() {
+        // Проверяем расстояние до героя, если расстояние меньше чем макс расстояние, пишем что можно пикнуть
     }
 
     private void OnTriggerEnter(Collider other) {
