@@ -23,6 +23,10 @@ public class DamageDef {
 public class Sword : MonoBehaviour {
     public Hero owner;
 
+    public float maxPickDist = 1f;
+
+    public bool ________________;
+
     public bool pickable = false;   // Если расстояние становится нормальным, приравнивается к тру,
     // меняется тэг чтобы можно было легко найти
 
@@ -31,7 +35,7 @@ public class Sword : MonoBehaviour {
 
     // Определяет позицию оружия
     [SerializeField]
-    private WeaponState _state = WeaponState.idle;
+    private WeaponState _state = WeaponState.waiting;
     public WeaponState state {
         get { return (_state); }
         set {
@@ -73,6 +77,16 @@ public class Sword : MonoBehaviour {
 
     private void Update() {
         // Проверяем расстояние до героя, если расстояние меньше чем макс расстояние, пишем что можно пикнуть
+        if((Hero.S.transform.position - transform.position).magnitude > maxPickDist) {
+            pickable = false;
+        } else {
+            // Если дистанция подходит
+            pickable = true;
+            //Debug.Log("You can pick this sword");
+        }
+
+        // Над оружием появляется меточка, какой урон и от какой стихии
+
     }
 
     private void OnTriggerEnter(Collider other) {

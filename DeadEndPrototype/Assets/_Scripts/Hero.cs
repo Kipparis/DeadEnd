@@ -9,6 +9,8 @@ using UnityEngine;
 // TODO: Сделать класс alive, в нём будет функция он хит энтер которая спаунит показ урона, и показ хпшки, так же основывая на
 // резистах убирает из текущего хп.
 
+// TODO: Написать функции Loot Equip, и класс инвентаря для того чтобы можно было что то делать
+
 public class Hero : MonoBehaviour {
 
     public static Hero S;
@@ -29,6 +31,8 @@ public class Hero : MonoBehaviour {
     public float height;
     public bool onGround = false;
 
+    // TODO: Добавить свойство, что когда добавляешь сюда итем, сразу задаётся родитель и стостояние
+    // для меча
     public Sword sword;   // Максимальное кол-во экипируемых мечей
     public HealthBar healthBar;
 
@@ -186,6 +190,22 @@ public class Hero : MonoBehaviour {
         if (collision.gameObject.tag == "Ground") {
             onGround = true;
             height = collision.gameObject.transform.position.y;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        if (Utils.FindTaggedParent(other.gameObject).tag == "Sword") {
+            //Debug.Log("Triggered with sword");
+
+            // Сначала просто лутаем, но это для начала
+            // Задаём родителя ( потому что мы его лутанули )
+            GameObject go = other.gameObject;
+            go.transform.SetParent(transform);
+
+            // Задаём состояние и другое
+            sword = other.GetComponent<Sword>();
+
+            sword.state = WeaponState.idle;
         }
     }
 
