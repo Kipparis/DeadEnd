@@ -9,7 +9,7 @@ public class Scoreboard : MonoBehaviour {
 
     public bool ___________________;
     // Для того чтобы сразу задавать родителя для новых хуйнюшек
-    Transform UI;
+    public Transform UI;
 
     private void Awake() {
         S = this;

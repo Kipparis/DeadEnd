@@ -11,6 +11,8 @@ using UnityEngine;
 
 // TODO: Сделать ПИ скалируемым, сделать считывание и парс диалогов из файла .di
 
+// TODO: Вверху сделать простую табличку о характеристиках, и выплывающую таблицу об эквипе
+
 public class DeadEnd : MonoBehaviour {
 
     public static DeadEnd S;

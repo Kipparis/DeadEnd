@@ -221,6 +221,13 @@ public class Utils : MonoBehaviour {
 	}
 	
 	
+    // ...............RECT FUNCTIONS................\\
+    public static Rect CombineRectOfChildrens(GameObject go){
+        if ()
+    }
+
+    
+
 //============================ Transform Functions ============================\
 	
 	// This function will iteratively climb up the transform.parent tree

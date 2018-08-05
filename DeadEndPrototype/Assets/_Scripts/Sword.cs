@@ -25,7 +25,13 @@ public class Sword : MonoBehaviour {
 
     public float maxPickDist = 1f;
 
+    public GameObject pointerPrefab;
+
     public bool ________________;
+
+    Pointer pointer;    // Ссылка на текущий определитель предмета ( чтоб не создавать его дважды)
+
+    bool pointerCreated = false;
 
     public bool pickable = false;   // Если расстояние становится нормальным, приравнивается к тру,
     // меняется тэг чтобы можно было легко найти
@@ -75,18 +81,49 @@ public class Sword : MonoBehaviour {
         }
     }
 
+    // TODO: Сделать так чтоб подсказка показывалась на одном расстоянии, 
+    // а лутовать можно на другом
     private void Update() {
         // Проверяем расстояние до героя, если расстояние меньше чем макс расстояние, пишем что можно пикнуть
         if((Hero.S.transform.position - transform.position).magnitude > maxPickDist) {
             pickable = false;
+            if (pointerCreated) {
+                // Мы отошли слишком далеко
+                pointerCreated = false; // Обнуляем переменную
+                Destroy(pointer.gameObject);    // Удаляем поинтер
+            }
         } else {
             // Если дистанция подходит
             pickable = true;
             //Debug.Log("You can pick this sword");
+
+            // TODO: В будущем один раз через класс создаём поинтер, 
+            // а потом просто обновляем его позицию
+            // Делаем указку над ним ( сначала единоразово в коде, потом делаем конструктор )
+            MakePointer();
         }
 
         // Над оружием появляется меточка, какой урон и от какой стихии
 
+    }
+
+    void MakePointer() {
+        // Делаем так чтоб он больше не создавался
+        if (pointerCreated) {
+            return;
+        }
+        pointerCreated = true;
+
+        // Создаёт сам ио
+        GameObject go = Instantiate(pointerPrefab) as GameObject;
+        go.transform.SetParent(Scoreboard.S.UI);
+
+        pointer = go.GetComponent<Pointer>();
+        pointer.poi = gameObject;
+
+        // В этом же месте создаём текст
+        pointer.name = "Wooden stick";
+        pointer.damage = dd.damage.ToString();
     }
 
     private void OnTriggerEnter(Collider other) {
